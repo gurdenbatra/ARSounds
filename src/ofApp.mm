@@ -53,6 +53,7 @@ void ofApp::setup(){
     doneRecording = false;
     doesContain = false;
     play = false;
+    first = false;
     
     ofEnableAlphaBlending();
     
@@ -118,6 +119,7 @@ void ofApp::draw(){
         if(aruco.getNumMarkers() == 0){
             volume = 0;
             addSound = false;
+            first = false;
             audio.clear();
         }
         
@@ -131,14 +133,18 @@ void ofApp::draw(){
                 aruco.begin(i);
                 markers = aruco.getMarkers();
                 markerCenter = markers[i].getCenter();
+                markerArea = markers[i].getArea();
                 currentMarker = markers[i].idMarker;
                 
                 if(samples.size() == 0){
                     //first ever marker detected
+                    first = true;
                     drawMarker(0.1,ofColor(255,0,0));
+                    
                 }
                 
                 else {
+                    first = false;
                     for(int j=0;j<samples.size();j++){
                         if(samples[j].markerid == currentMarker){
                             doesContain = true;
@@ -150,6 +156,29 @@ void ofApp::draw(){
                         //recording exists
                         if(play && !addSound){
                             volume = 1;
+                            
+                            if(markerArea <= 1800){
+                                volMultiplier = 0.1;
+                                
+                            }
+                            else if(markerArea> 1800 && markerArea <= 5000){
+                                volMultiplier = 0.2;
+                                
+                            }
+                            else if(markerArea> 5000 && markerArea <= 10000){
+                                volMultiplier = 0.4;
+                                
+                            }
+                            else if(markerArea> 10000 && markerArea <= 20000){
+                                volMultiplier = 0.6;
+                                
+                            }
+                            else if(markerArea> 20000){
+                                volMultiplier = 0.9;
+                                
+                            }
+                            
+                            
                         }
                         else{
                             volume = 0;
@@ -170,7 +199,13 @@ void ofApp::draw(){
     
     if(addSound){
         ofSetColor(255,0,0);
+        
         font.drawString("Now Recording, 2 finger tap to stop", 10, height-20);
+    }
+    
+    if(first){
+        ofSetColor(200,0,0);
+        font.drawString("Your first marker! Tap record to leave sound", 10, height-20);
     }
 
 }
@@ -227,8 +262,8 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
                     currentSample = samples[j].audio[samples[j].playhead];
                 }
                     
-                output[i*nChannels] =currentSample*volume;
-                output[i*nChannels + 1] =currentSample*volume;
+                output[i*nChannels] =currentSample*volume*volMultiplier;
+                output[i*nChannels + 1] =currentSample*volume*volMultiplier;
                 samples[j].playhead++;
                     
                 if(samples[j].playhead >= samples[j].audio.size()){

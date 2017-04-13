@@ -27,9 +27,7 @@ class ofApp : public ofxiOSApp{
         ofTrueTypeFont font;
 		
 		ofVideoGrabber grabber;
-		ofTexture tex;
-		unsigned char * pix;
-    
+
         ofBaseVideoDraws * video;
     
         ofxAruco aruco;
@@ -39,6 +37,7 @@ class ofApp : public ofxiOSApp{
         bool showBoardImage;
         bool doesContain;
         bool play;
+        bool first;
         ofImage board;
         ofImage marker;
     
@@ -51,7 +50,6 @@ class ofApp : public ofxiOSApp{
         void audioOut(float * output, int bufferSize, int nChannels);
         void audioIn(float * input, int bufferSize, int nChannels);
     
-        //int		bufferSize;
         int		sampleRate;
         int	initialBufferSize;
 
@@ -60,9 +58,11 @@ class ofApp : public ofxiOSApp{
     
     
         int volume;
+        float volMultiplier;
     
         vector<float> audio;
         int currentMarker;
+        float markerArea;
     
     
         vector<AudioSample> samples;
