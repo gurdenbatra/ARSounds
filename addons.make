@@ -1,0 +1,5 @@
+ofxAruco
+ofxCv
+ofxMaxim
+ofxOpenCv
+ofxSoundProcessor
